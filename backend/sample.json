@@ -1,0 +1,97 @@
+
+// sample 1
+{
+    "title": "Add Two Numbers",
+    "description": "Given two numbers a and b add them up and return the outout",
+    "difficulty": "Easy",
+    "tags": [
+        "math",
+        "operators",
+        "addition"
+    ],
+    "examples": {
+        "PYTHON": {
+            "input": "3 7",
+            "output": "10",
+            "explanation": "Adding 3 and 7 gives 10."
+        },
+        "JAVASCRIPT": {
+            "input": "-5 12",
+            "output": "7",
+            "explanation": "Adding -5 and 12 gives 7."
+        }
+    },
+    "constraints": "-10^9 ≤ a, b ≤ 10^9",
+    "hints": "You can use the '+' operator to add numbers.",
+    "testcases": [
+        {
+            "input": "100 200",
+            "output": "300"
+        },
+        {
+            "input": "-500 -600",
+            "output": "-1100"
+        },
+        {
+            "input": "0 0",
+            "output": "0"
+        }
+    ],
+ "codeSnippets": {
+        "JAVASCRIPT": "const fs = require('fs');\n\nfunction addTwoNumbers(a, b) {\n    // Write your code here\n    // Return the sum of a and b\n    return a + b;\n}\n\n// Reading input from stdin (using fs to read all input)\nconst input = fs.readFileSync(0, 'utf-8').trim();\nconst [a, b] = input.split(' ').map(Number);\n\nconsole.log(addTwoNumbers(a, b));",
+        "PYTHON": "def add_two_numbers(a, b):\n    # Write your code here\n    # Return the sum of a and b\n    return a + b\n\nimport sys\ninput_line = sys.stdin.read()\na, b = map(int, input_line.split())\nprint(add_two_numbers(a, b))",
+        "JAVA": "import java.util.Scanner;\n\npublic class Main {\n    public static int addTwoNumbers(int a, int b) {\n        // Write your code here\n        // Return the sum of a and b\n        return a + b;\n    }\n\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int a = sc.nextInt();\n        int b = sc.nextInt();\n        System.out.println(addTwoNumbers(a, b));\n    }\n}"
+    },
+    "referenceSolutions": {
+        "JAVASCRIPT": "const fs = require('fs');\n\n// Reading input from stdin (using fs to read all input)\nconst input = fs.readFileSync(0, 'utf-8').trim();\nconst [a, b] = input.split(' ').map(Number);\n\nconsole.log(a + b);",
+        "PYTHON": "import sys\ninput_line = sys.stdin.read()\na, b = map(int, input_line.split())\nprint(a + b)",
+        "JAVA": "import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        int a = sc.nextInt();\n        int b = sc.nextInt();\n        System.out.println(a + b);\n    }\n}"
+    }
+}
+
+//sample 2
+
+{
+  "title": "Longest Increasing Subsequence",
+  "description": "Given an integer array `nums`, return the length of the longest strictly increasing subsequence.\n\nA subsequence is a sequence that can be derived from an array by deleting some or no elements without changing the order of the remaining elements. For example, `[3,6,2,7]` is a subsequence of `[0,3,1,6,2,2,7]`.",
+  "difficulty": "Medium",
+  "tags": ["dynamic programming", "binary search"],
+  "examples": [
+    {
+      "input": "[10,9,2,5,3,7,101,18]",
+      "output": "4",
+      "explanation": "The LIS is [2,3,7,101]."
+    },
+    {
+      "input": "[0,1,0,3,2,3]",
+      "output": "4",
+      "explanation": "The LIS is [0,1,2,3]."
+    },
+    {
+      "input": "[7,7,7,7,7,7,7]",
+      "output": "1",
+      "explanation": "The LIS is [7]."
+    }
+  ],
+  "constraints": "1 <= nums.length <= 2500\n-10^4 <= nums[i] <= 10^4",
+  "hints": "You can use the '+' operator to add numbers.",
+  "testcases": [
+    { "input": "[10,9,2,5,3,7,101,18]", "output": "4" },
+    { "input": "[0,1,0,3,2,3]", "output": "4" },
+    { "input": "[7,7,7,7,7,7,7]", "output": "1" },
+    { "input": "[1,2,3,4,5]", "output": "5" },
+    { "input": "[5,4,3,2,1]", "output": "1" }
+  ],
+  "codeSnippets": {
+    "JAVASCRIPT": "/**\n * @param {number[]} nums\n * @return {number}\n */\nvar lengthOfLIS = function(nums) {\n    // your code here\n};\n\nconst readline = require('readline');\nconst rl = readline.createInterface({ input: process.stdin, output: process.stdout });\n\nrl.on('line', (line) => {\n    const nums = JSON.parse(line);\n    console.log(lengthOfLIS(nums));\n    process.exit();\n});",
+    "PYTHON": "def lengthOfLIS(nums):\n    # your code here\n    pass\n\nimport sys, json\nnums = json.loads(sys.stdin.readline())\nprint(lengthOfLIS(nums))"
+    
+   
+  },
+  "referenceSolutions": {
+    "JAVASCRIPT": "/**\n * @param {number[]} nums\n * @return {number}\n */\nvar lengthOfLIS = function(nums) {\n    if (nums.length === 0) return 0;\n    let tails = [];\n    for (let num of nums) {\n        let i = 0, j = tails.length;\n        while (i < j) {\n            let m = Math.floor((i + j) / 2);\n            if (tails[m] < num) i = m + 1;\n            else j = m;\n        }\n        if (i < tails.length) tails[i] = num;\n        else tails.push(num);\n    }\n    return tails.length;\n};\n\nconst readline = require('readline');\nconst rl = readline.createInterface({ input: process.stdin, output: process.stdout });\n\nrl.on('line', (line) => {\n    const nums = JSON.parse(line);\n    console.log(lengthOfLIS(nums));\n    process.exit();\n});",
+    "PYTHON": "import bisect\n\ndef lengthOfLIS(nums):\n    tails = []\n    for num in nums:\n        idx = bisect.bisect_left(tails, num)\n        if idx == len(tails):\n            tails.append(num)\n        else:\n            tails[idx] = num\n    return len(tails)\n\nimport sys, json\nnums = json.loads(sys.stdin.readline())\nprint(lengthOfLIS(nums))"
+    
+   
+  }
+}

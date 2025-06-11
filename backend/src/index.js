@@ -2,6 +2,9 @@ import express from "express"
 import dotenv from "dotenv"
 import cookieParser from "cookie-parser"
 import userRoutes from "./routes/auth.routes.js"
+import problemRoutes from "./routes/problem.routes.js"
+import executionRoutes from "./routes/executedCode.routes.js"
+
 dotenv.config({ path: "./.env" })
 const app = express()
 const port = process.env.PORT || 8080
@@ -15,6 +18,8 @@ app.get("/", (req, res) => {
 })
 
 app.use("/api/v1/auth", userRoutes)
+app.use("/api/v1/problems", problemRoutes)
+app.use("/api/v1/execute-code", executionRoutes)
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

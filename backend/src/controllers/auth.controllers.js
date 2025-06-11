@@ -8,9 +8,10 @@ import { asyncHandler } from "../utils/async-handler.js"
 import jwt from "jsonwebtoken"
 
 
+ 
 
 const register = asyncHandler(async (req, res) => {
-    const { email, password, name } = req.body
+    const { email, password, name ,role} = req.body
 
     const existingUser = await db.user.findUnique({
         where: {

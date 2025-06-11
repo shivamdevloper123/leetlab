@@ -36,4 +36,28 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     next()
 })
 
-export { authMiddleware }
+const checkAdmin = async (req, res, next) => {
+    try {
+
+        const userId = req.user.id;
+        const user = await db.user.findUnique({
+            where: {
+                id: userId,
+            },
+            select: {
+                role: true
+            }
+        })
+
+        if (!user || user.role !== "ADMIN") {
+            return res.status(403).json(new ApiError(403, "Access is denied - Admin only"))
+
+        }
+        next()
+    } catch (error) {
+        console.error("Error checking admin role:", error);
+        res.status(500).json({ message: "Error checking admin role" });
+    }
+}
+
+export { authMiddleware ,checkAdmin }
