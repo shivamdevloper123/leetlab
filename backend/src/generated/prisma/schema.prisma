@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../generated/prisma"
@@ -38,10 +32,11 @@ model User {
   problems      Problem[]
   submission    Submission[]
   problemSolved ProblemSolved[]
+  playlists     Playlist[]
 }
 
 model Problem {
-  id          String     @id @default(ulid())
+  id          String     @id @default(uuid())
   title       String
   description String
   difficulty  Difficulty
@@ -61,12 +56,13 @@ model Problem {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  submission Submission[]
-  solvedBy   ProblemSolved[]
+  submission        Submission[]
+  solvedBy          ProblemSolved[]
+  problemsPlaylists ProblemInPlaylist[]
 }
 
 model Submission {
-  id            String  @id @default(ulid())
+  id            String  @id @default(uuid())
   userId        String
   problemId     String
   sourceCode    Json
@@ -74,21 +70,21 @@ model Submission {
   stdin         String?
   stdout        String?
   stderr        String?
-  compileOutput String
-  status        String
-  memory        String
+  compileOutput String?
+  status        String // Accepted , wrong answer
+  memory        String?
   time          String?
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
 
   user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Problem   Problem          @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  problem   Problem          @relation(fields: [problemId], references: [id], onDelete: Cascade)
   testCases TestCaseResult[]
 }
 
 model TestCaseResult {
-  id            String  @id @default(ulid())
+  id            String  @id @default(uuid())
   submissionId  String
   testCase      Int
   passed        Boolean
@@ -110,7 +106,7 @@ model TestCaseResult {
 }
 
 model ProblemSolved {
-  id        String   @id @default(ulid())
+  id        String   @id @default(uuid())
   userId    String
   problemId String
   createdAt DateTime @default(now())
@@ -121,4 +117,33 @@ model ProblemSolved {
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
 
   @@unique([userId, problemId])
+}
+
+model Playlist {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  userId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  problems ProblemInPlaylist[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([name, userId]) // unique playlist names per user
+}
+
+model ProblemInPlaylist {
+  id         String   @id @default(uuid())
+  playListId String
+  problemId  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  playlist Playlist @relation(fields: [playListId], references: [id], onDelete: Cascade)
+  problem  Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([playListId, problemId])
 }

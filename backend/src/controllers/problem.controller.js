@@ -163,7 +163,7 @@ export const getProblemById = async (req, res) => {
 
 export const updateProblem = async (req, res) => {
     const { id } = req.params;
-   
+
     const {
         title,
         description,
@@ -184,7 +184,7 @@ export const updateProblem = async (req, res) => {
 
     }
     try {
-        console.log("problem id",id)
+        console.log("problem id", id)
         const existingProblem = await db.problem.findUnique({
             where: { id },
         });
@@ -195,7 +195,7 @@ export const updateProblem = async (req, res) => {
         console.log("existing problem", existingProblem)
 
 
-              for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
+        for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
             console.log("referenceSolutions", referenceSolutions)
             const languageId = getJudge0LanguageId(language);
             // console.log("language and solution code",[language, solutionCode])
@@ -234,7 +234,7 @@ export const updateProblem = async (req, res) => {
 
         }
 
-        
+
         const updatedProblem = await db.problem.update({
             where: { id },
             data: {
@@ -245,7 +245,7 @@ export const updateProblem = async (req, res) => {
                 examples,
                 constraints,
                 hints,
-              
+
                 testcases,
                 codeSnippets,
                 referenceSolutions,
@@ -262,30 +262,57 @@ export const updateProblem = async (req, res) => {
 };
 
 export const deleteProblem = async (req, res) => {
-  const { id } = req.params;
+    const { id } = req.params;
 
-  try {
-    const problem = await db.problem.findUnique({ where: { id } });
+    try {
+        const problem = await db.problem.findUnique({ where: { id } });
 
-    if (!problem) {
-      return res.status(404).json({ error: "Problem Not found" });
+        if (!problem) {
+            return res.status(404).json({ error: "Problem Not found" });
+        }
+
+        await db.problem.delete({ where: { id } });
+
+        res.status(200).json({
+            success: true,
+            message: "Problem deleted Successfully",
+        });
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({
+            error: "Error While deleting the problem",
+        });
     }
-
-    await db.problem.delete({ where: { id } });
-
-    res.status(200).json({
-      success: true,
-      message: "Problem deleted Successfully",
-    });
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({
-      error: "Error While deleting the problem",
-    });
-  }
 };
-export const getAllProblemsSolvedByUser = async (req, res) => { 
-
-}
 
 
+
+export const getAllProblemsSolvedByUser = async (req, res) => {
+    try {
+        const problems = await db.problem.findMany({
+            where: {
+                solvedBy: {
+                    some: {
+                        userId: req.user.id
+                    }
+                }
+            },
+            include: {
+                solvedBy: {
+                    where: {
+                        userId: req.user.id
+                    }
+                }
+            }
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Problems fetched successfully",
+            problems
+        })
+    } catch (error) {
+        console.error("Error fetching problems :", error);
+        res.status(500).json({ error: "Failed to fetch problems" })
+    }
+};

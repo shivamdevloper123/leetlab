@@ -59,11 +59,17 @@ export const executedCode = async (req, res) => {
 
         console.log("detailed results", detailedResults)
 
-        //store submission summery
+
+
         const submission = await db.submission.create({
             data: {
-                userId,
-                problemId,
+                user: {
+                    connect: { id: userId },
+                },
+                Problem: {
+                    connect: { id: problemId },
+                },
+
                 sourceCode: source_code,
                 language: getLanguageName(language_id),
                 stdin: stdin.join("\n"),
@@ -73,7 +79,7 @@ export const executedCode = async (req, res) => {
                     : null,
                 compileOutput: detailedResults.some((r) => r.compile_output)
                     ? JSON.stringify(detailedResults.map((r) => r.compile_output))
-                    : null,
+                    : "",
                 status: allPassed ? "Accepted" : "Wrong Answer",
                 memory: detailedResults.some((r) => r.memory)
                     ? JSON.stringify(detailedResults.map((r) => r.memory))
@@ -81,8 +87,6 @@ export const executedCode = async (req, res) => {
                 time: detailedResults.some((r) => r.time)
                     ? JSON.stringify(detailedResults.map((r) => r.time))
                     : null,
-
-
             },
         });
 
@@ -128,7 +132,7 @@ export const executedCode = async (req, res) => {
                 id: submission.id,
             },
             include: {
-                testCase: true
+                testCases: true
             },
         })
         res.status(200).json({
