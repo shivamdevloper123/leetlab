@@ -108,7 +108,17 @@ export const createProblem = asyncHandler(async (req, res) => {
 export const getAllProblems = asyncHandler(async (req, res) => {
 
     try {
-        const problems = await db.problem.findMany();
+        const problems = await db.problem.findMany(
+            {
+                include:{
+                    solvedBy:{
+                        where:{
+                            userId:req.user.id
+                        }
+                    }
+                }
+            }
+        );
         if (!problems) {
             return res.status(404).json({
                 error: "No problems Found",
@@ -117,8 +127,9 @@ export const getAllProblems = asyncHandler(async (req, res) => {
         }
 
         res.status(200).json(new ApiResponse(200,
+            problems,
             "Message fetched Successfully",
-            problems)
+            )
 
         )
     } catch (error) {
@@ -127,7 +138,9 @@ export const getAllProblems = asyncHandler(async (req, res) => {
 
         )
     }
+
 })
+
 
 export const getProblemById = asyncHandler(async (req, res) => {
     const { id } = req.params;
@@ -140,7 +153,7 @@ export const getProblemById = asyncHandler(async (req, res) => {
         }
 
         return res.status(200).json(
-            new ApiResponse(200, "Problem fetched successfully", problem)
+            new ApiResponse(200, problem,"Problem fetched successfully")
         );
     } catch (error) {
         console.log(error);
@@ -244,7 +257,7 @@ export const deleteProblem = asyncHandler(async (req, res) => {
         await db.problem.delete({ where: { id } });
 
         return res.status(200).json(
-            new ApiResponse(200, "Problem deleted successfully", null)
+            new ApiResponse(200,  null,"Problem deleted successfully",)
         );
     } catch (error) {
         console.log(error);
