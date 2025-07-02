@@ -1,20 +1,20 @@
 import { db } from "../lib/db.js"
 
-// import { asyncHandler } from "../utils/async-handler.js"
+import { asyncHandler } from "../utils/async-handler.js"
 
 import { ApiResponse } from "../utils/api-response.js"
 
 
 import { ApiError } from "../utils/api-error.js";
 
-const addProblemToPlaylist = async (req, res) => {
+const addProblemToPlaylist = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
     const { problemIds } = req.body; // Accept an array of problem IDs
 
     try {
         // Ensure problemIds is an array
         if (!Array.isArray(problemIds) || problemIds.length === 0) {
-            return res.status(400).json({ error: "Invalid or missing problemIds" });
+            return res.status(400).json(new ApiError(400, "Invalid or missing problemIds"));
         }
 
         console.log(
@@ -32,24 +32,20 @@ const addProblemToPlaylist = async (req, res) => {
             })),
         });
 
-        res.status(201).json({
-            success: true,
-            message: "Problems added to playlist successfully",
-            problemsInPlaylist,
-        });
+        res.status(201).json(new ApiResponse(201, problemsInPlaylist, "Problems added to playlist successfully"));
     } catch (error) {
         console.error("Error adding problems to playlist:", error.message);
-        res.status(500).json({ error: "Failed to add problems to playlist" });
+        res.status(500).json(new ApiError(500, "Failed to add problems to playlist"));
     }
-};
+})
 
-const createPlayList = async (req, res) => {
+const createPlayList = asyncHandler(async (req, res) => {
     try {
 
         const { name, description } = req.body
         const userId = req.user.id
         if (!name || !description) {
-            return res.status(400).json(new ApiResponse(400, "All fields are required"))
+            return res.status(400).json(new ApiError(400, "All fields are required"))
         }
 
         console.log(`name ${name} and userId ${userId}`)
@@ -66,9 +62,9 @@ const createPlayList = async (req, res) => {
         console.log(error)
         res.status(500).json(new ApiError(500, "Failed to create playlist"));
     }
-};
+})
 
-const deletePlayList = async (req, res) => {
+const deletePlayList = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
 
     try {
@@ -78,18 +74,18 @@ const deletePlayList = async (req, res) => {
             },
         });
 
-        res.status(200).json({
-            success: true,
-            message: "Playlist deleted successfully",
+        res.status(200).json(new ApiResponse(
+            200,
             deletedPlaylist,
-        });
+            "Playlist deleted successfully",
+        ));
     } catch (error) {
         console.error("Error deleting playlist:", error.message);
-        res.status(500).json({ error: "Failed to delete playlist" });
+        res.status(500).json(new ApiError(500, "Failed to delete playlist"));
     }
-};
+})
 
-const getPlayAllListDetails = async (req, res) => {
+const getPlayAllListDetails = asyncHandler(async (req, res) => {
     try {
         const playLists = await db.playlist.findMany({
             where: {
@@ -110,12 +106,12 @@ const getPlayAllListDetails = async (req, res) => {
 
     } catch (error) {
         console.error("Error fetching playlist:", error);
-        res.status(500).json(new ApiResponse(500, "all playlist failed to  fetched "));
+        res.status(500).json(new ApiError(500, "all playlist failed to  fetched "));
     }
-};
+})
 
 
-const getPlayListDetails = async (req, res) => {
+const getPlayListDetails = asyncHandler(async (req, res) => {
     const { playlistId } = req.params;
 
     try {
@@ -131,30 +127,30 @@ const getPlayListDetails = async (req, res) => {
         });
 
         if (!playList) {
-            return res.status(404).json({ error: "Playlist not found" });
+            return res.status(404).json(new ApiError(404, "Playlist not found"));
         }
 
-        res.status(200).json({
-            success: true,
-            message: "Playlist fetched successfully",
+        res.status(200).json(new ApiResponse(
+            200,
             playList,
-        });
+            "Playlist fetched successfully",
+        ));
     } catch (error) {
         console.error("Error fetching playlist:", error);
-        res.status(500).json({ error: "Failed to fetch playlist" });
+        res.status(500).json(new ApiError(500, "Failed to fetch playlist"));
     }
-};
+})
 
-const removeProblemFromPlaylist = async (req, res) => {
+const removeProblemFromPlaylist = asyncHandler(async (req, res) => {
     const { playListId } = req.params;
     const { problemIds } = req.body;
 
     try {
         if (!Array.isArray(problemIds) || problemIds.length === 0) {
-            return res.status(400).json({ error: "Invalid or missing problemIds" });
+            return res.status(400).json(new ApiError(400, "Invalid or missing problemIds"));
         }
         // Only delete given problemIds not all
-console.log("problemIds",problemIds, "playlist id ",playListId)
+        console.log("problemIds", problemIds, "playlist id ", playListId)
         const deletedProblem = await db.problemInPlaylist.deleteMany({
             where: {
                 playListId,
@@ -164,17 +160,18 @@ console.log("problemIds",problemIds, "playlist id ",playListId)
             },
         });
 
-        console.log("deletedProblem",deletedProblem)
-        res.status(200).json({
-            success: true,
-            message: "Problem removed from playlist successfully",
+        console.log("deletedProblem", deletedProblem)
+        res.status(200).json(new ApiResponse(
+            200,
             deletedProblem,
-        });
+            "Problem removed from playlist successfully",
+        )
+        );
     } catch (error) {
         console.error("Error removing problem from playlist:", error.message);
-        res.status(500).json({ error: "Failed to remove problem from playlist" });
+        res.status(500).json(new ApiError(500, "Failed to remove problem from playlist"));
     }
-};
+})
 
 export {
     addProblemToPlaylist,

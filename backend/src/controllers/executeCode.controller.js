@@ -1,7 +1,11 @@
 import { pollBatchResults, submitBatch, getLanguageName } from "../lib/judge0.lib.js";
 import { db } from "../lib/db.js"
+import {ApiError} from "../utils/api-error.js"
+import {ApiResponse} from "../utils/api-response.js"
+import{asyncHandler} from "../utils/async-handler.js"
 
-export const executedCode = async (req, res) => {
+
+export const executedCode = asyncHandler(async (req, res) => {
     try {
         const { source_code,
             language_id,
@@ -13,7 +17,7 @@ export const executedCode = async (req, res) => {
         // validate test cases 
 
         if (!Array.isArray(stdin) || stdin.length === 0 || expected_outputs.length !== stdin.length) {
-            return res.status(400).json({ error: "Invalid or missing test cases" })
+            return res.status(400).json(  new ApiError(400,"Invalid or missing test cases") )
         }
 
         const languageKey = Object.keys(source_code)[0]; // Get "JAVASCRIPT"
@@ -135,17 +139,19 @@ export const executedCode = async (req, res) => {
                 testCases: true
             },
         })
-        res.status(200).json({
-            success: true,
-            message: "Code Executed Successfully! ",
-            submission: submissionWithTestCase
-        })
+        res.status(200).json(new ApiResponse(200,
+            {
+                 submission: submissionWithTestCase
+                },
+                "Code Executed Successfully! "))
+        
+      
 
     } catch (error) {
         console.error("Error executing code:", error.message);
         res.status(500).json({ error: "Failed to execute code" });
     }
-}
+})
 
 
 

@@ -6,14 +6,24 @@ import problemRoutes from "./routes/problem.routes.js"
 import executionRoutes from "./routes/executedCode.routes.js"
 import submissionRoutes from "./routes/submission.routes.js"
 import playlistRoutes from "./routes/playlist.routes.js"
-
+import cors from "cors"
 dotenv.config({ path: "./.env" })
 const app = express()
 const port = process.env.PORT || 8080
 
+app.use(
+    cors({
+      origin: process.env.BASE_URL,
+      credentials: true,
+    })
+  );
 app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
+app.use(cors({
+    origin:process.env.BASE_URL || "*",
+    credentials:true
+}))
 
 app.get("/", (req, res) => {
     res.send("hello welcome to the leet-lab 🔥")

@@ -8,10 +8,10 @@ import { asyncHandler } from "../utils/async-handler.js"
 import jwt from "jsonwebtoken"
 
 
- 
+
 
 const register = asyncHandler(async (req, res) => {
-    const { email, password, name ,role} = req.body
+    const { email, password, name, role } = req.body
 
     const existingUser = await db.user.findUnique({
         where: {
@@ -66,13 +66,13 @@ const login = asyncHandler(async (req, res) => {
     })
 
     if (!user) {
-        return res.status(401).json(new ApiError(401, "User not found"))
+        return res.status(403).json(new ApiError(403, "User not found"))
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
 
     if (!isMatch) {
-        return res.status(401).json(new ApiError(401, "Invalid credentials"))
+        return res.status(403).json(new ApiError(403, "Invalid credentials"))
 
     }
 
@@ -88,18 +88,15 @@ const login = asyncHandler(async (req, res) => {
 
     res.cookie("jwt", token, cookieOption)
 
-    res.status(200).json({
-        success: true,
-        message: "User Logged in successfully",
-        user: {
+
+    res.status(200).json(new ApiResponse(200,
+        {
             id: user.id,
             email: user.email,
             name: user.name,
             role: user.role,
             image: user.image
-        }
-    })
-
+        }, "User Logged in successfully"))
 
 })
 
@@ -117,9 +114,11 @@ const logout = asyncHandler(async (req, res) => {
 })
 
 const check = asyncHandler(async (req, res) => {
-    res.status(200).json(new ApiResponse(
-        200,
-        { user: req.user },
+    res.status(200).json(new ApiResponse(200,
+        {
+            user: req.user
+
+        },
         "User authenticated successfully"
     ))
 })
