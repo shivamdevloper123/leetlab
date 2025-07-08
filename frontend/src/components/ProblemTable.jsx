@@ -4,7 +4,7 @@ import { useActions } from "../store/useActions.js";
 import { Link } from "react-router-dom";
 import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
 
-const ProblemTable = ({ problems }) => {
+const ProblemTable = ({problems }) => {
   const { authUser } = useAuthStore();
   const { onDeleteProblem } = useActions();
   //   const { createPlaylist } = usePlaylistStore();
@@ -32,7 +32,7 @@ const ProblemTable = ({ problems }) => {
       )
         .filter((problem) =>
         difficulty === "ALL" ? true : problem.difficulty === difficulty
-      )
+    )
       .filter((problem) =>
         selectedTag === "ALL" ? true : problem.tags?.includes(selectedTag)
       );
@@ -51,6 +51,7 @@ const ProblemTable = ({ problems }) => {
   }, [filteredProblems, currentPage]);
 
   const handleDelete = (id) => {
+    confirm("Are you sure you want to delete this problem")
     onDeleteProblem(id);
   };
   return (

@@ -16,7 +16,7 @@ export const getAllSubmission = asyncHandler(async(req , res)=>{
 
         res.status(200).json( new ApiResponse
         (    true,
-            submissions,
+            {submissions},
             "Submissions fetched successfully",
         ))
         
@@ -40,7 +40,7 @@ export const getSubmissionsForProblem = asyncHandler(async (req , res)=>{
 
         res.status(200).json(new ApiResponse(200 ,
             
-            submissions,
+            {submissions},
             "Submission fetched successfully",
         ))
     } catch (error) {

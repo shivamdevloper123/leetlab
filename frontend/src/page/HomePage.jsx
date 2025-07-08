@@ -18,7 +18,7 @@ const HomePage = () => {
     );
   }
 
-  console.log("problems", problems)
+  // console.log("problems", problems)
 
   return (
     <div className="min-h-screen flex flex-col items-center mt-14 px-4">

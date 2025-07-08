@@ -95,8 +95,8 @@ export const createProblem = asyncHandler(async (req, res) => {
         console.log("newProblem", newProblem)
         return res.status(201).json(new ApiResponse(
             201,
+            { problem: newProblem },
             "Message Created Successfully",
-            { problem: newProblem }
         ));
     } catch (error) {
         console.error("Error creating problem:", error);
@@ -152,6 +152,7 @@ export const getProblemById = asyncHandler(async (req, res) => {
             return res.status(404).json(new ApiError(404, "Problem not found"));
         }
 
+        console.log(typeof problem)
         return res.status(200).json(
             new ApiResponse(200, problem,"Problem fetched successfully")
         );

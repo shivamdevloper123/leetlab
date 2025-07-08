@@ -114,10 +114,13 @@ const logout = asyncHandler(async (req, res) => {
 })
 
 const check = asyncHandler(async (req, res) => {
+
+    if(!req.user){
+        return res.status(401).json(new ApiError(401,"Unauthorized"))
+    }
     res.status(200).json(new ApiResponse(200,
         {
             user: req.user
-
         },
         "User authenticated successfully"
     ))

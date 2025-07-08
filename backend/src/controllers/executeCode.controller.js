@@ -1,8 +1,8 @@
 import { pollBatchResults, submitBatch, getLanguageName } from "../lib/judge0.lib.js";
 import { db } from "../lib/db.js"
-import {ApiError} from "../utils/api-error.js"
-import {ApiResponse} from "../utils/api-response.js"
-import{asyncHandler} from "../utils/async-handler.js"
+import { ApiError } from "../utils/api-error.js"
+import { ApiResponse } from "../utils/api-response.js"
+import { asyncHandler } from "../utils/async-handler.js"
 
 
 export const executedCode = asyncHandler(async (req, res) => {
@@ -17,7 +17,7 @@ export const executedCode = asyncHandler(async (req, res) => {
         // validate test cases 
 
         if (!Array.isArray(stdin) || stdin.length === 0 || expected_outputs.length !== stdin.length) {
-            return res.status(400).json(  new ApiError(400,"Invalid or missing test cases") )
+            return res.status(400).json(new ApiError(400, "Invalid or missing test cases"))
         }
 
         const languageKey = Object.keys(source_code)[0]; // Get "JAVASCRIPT"
@@ -70,7 +70,7 @@ export const executedCode = asyncHandler(async (req, res) => {
                 user: {
                     connect: { id: userId },
                 },
-                Problem: {
+                problem: {
                     connect: { id: problemId },
                 },
 
@@ -141,11 +141,11 @@ export const executedCode = asyncHandler(async (req, res) => {
         })
         res.status(200).json(new ApiResponse(200,
             {
-                 submission: submissionWithTestCase
-                },
-                "Code Executed Successfully! "))
-        
-      
+                submission: submissionWithTestCase
+            },
+            "Code Executed Successfully! "))
+
+
 
     } catch (error) {
         console.error("Error executing code:", error.message);
