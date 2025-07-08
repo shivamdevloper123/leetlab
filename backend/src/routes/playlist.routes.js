@@ -14,7 +14,7 @@ router.post("/create-playlist" ,authMiddleware ,  createPlayList)
 
 router.post('/:playlistId/add-problem' , authMiddleware , addProblemToPlaylist)
 
-router.delete("/:playlistId" , authMiddleware , deletePlayList)
+router.post("/:playlistId" , authMiddleware , deletePlayList)
 
 router.delete("/:playlistId/remove-problem" , authMiddleware , removeProblemFromPlaylist)
 
