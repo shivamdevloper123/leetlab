@@ -32,17 +32,24 @@ const register = asyncHandler(async (req, res) => {
             role: UserRole.USER
         }
     })
-    const token = jwt.sign({ id: newUser },
+    // const token = jwt.sign({ id: newUser },
+    //     process.env.JWT_SECRET,
+    //     {
+    //         expiresIn: "7d"
+    //     }
+    // )
+
+    const token = jwt.sign(
+        { id: newUser.id },
         process.env.JWT_SECRET,
-        {
-            expiresIn: "7d"
-        }
-    )
+        { expiresIn: "7d" }
+    );
     const cookieOption = {
         httpOnly: true,
         sameSite: "strict",
         secure: process.env.NODE_ENV !== "development",
         maxAge: 1000 * 60 * 60 * 24 * 7
+
     }
 
     res.cookie("jwt", token, cookieOption)
@@ -76,14 +83,23 @@ const login = asyncHandler(async (req, res) => {
 
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-        expiresIn: "7d"
-    })
+    // const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    //     expiresIn: "7d"
+    // })
+
+    const token = jwt.sign(
+        { id: user.id }, // ✅ only pass id
+        process.env.JWT_SECRET,
+        { expiresIn: "7d" }
+    );
+
     const cookieOption = {
         httpOnly: true,
         sameSite: "strict",
         secure: process.env.NODE_ENV !== "development",
         maxAge: 1000 * 60 * 60 * 24 * 7
+
+
     }
 
     res.cookie("jwt", token, cookieOption)
@@ -105,6 +121,7 @@ const logout = asyncHandler(async (req, res) => {
         httpOnly: true,
         sameSite: "strict",
         secure: process.env.NODE_ENV !== "development",
+        secure: true,
         maxAge: 1000 * 60 * 60 * 24 * 7
     }
 
@@ -115,13 +132,13 @@ const logout = asyncHandler(async (req, res) => {
 
 const check = asyncHandler(async (req, res) => {
 
-    if(!req.user){
-        return res.status(401).json(new ApiError(401,"Unauthorized"))
+    if (!req.user) {
+        return res.status(401).json(new ApiError(401, "Unauthorized"))
     }
     res.status(200).json(new ApiResponse(200,
-        {
-            user: req.user
-        },
+        
+          { user:  req.user}
+        ,
         "User authenticated successfully"
     ))
 })

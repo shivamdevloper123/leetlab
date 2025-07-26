@@ -62,7 +62,9 @@ export const useAuthStore = create((set) => ({
         try {
 
             await axiosInstance.post("auth/logout");
+
             set({ authUser: null })
+            
             toast.success("Logout successfully")
         } catch (error) {
             console.log("Error logging out ", error);

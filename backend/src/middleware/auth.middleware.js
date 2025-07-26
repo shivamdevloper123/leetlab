@@ -60,4 +60,4 @@ const checkAdmin = async (req, res, next) => {
     }
 }
 
-export { authMiddleware ,checkAdmin }
+export { authMiddleware, checkAdmin }

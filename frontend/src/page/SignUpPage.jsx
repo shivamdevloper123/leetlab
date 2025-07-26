@@ -31,13 +31,14 @@ const SignupPage = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await signup(data);
+      await signup(data);
 
       console.log("sign up data", data);
     } catch (error) {
       console.log("signUp failed:", error);
     }
   };
+
   return (
     <div className="h-screen grid lg:grid-cols-2">
       <div className="flex flex-col justify-center items-center p-6 sm:p-12">

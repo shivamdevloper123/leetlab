@@ -1,3 +1,5 @@
+
+
 import { Editor } from "@monaco-editor/react";
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
@@ -21,19 +23,25 @@ import {
   ArrowBigLeftDash,
   ArrowBigLeft,
 } from "lucide-react";
-import { useProblemStore } from "../store/useProblemStore";
+import { useAuthStore } from "../store/useAuthStore.js";
+import { useProblemStore } from "../store/useProblemStore.js";
+import { useSubmissionStore } from "../store/useSubmissionStore";
+import { useExecutionStore } from "../store/useExecutionStore";
 import { getLanguageId } from "../lib/lang.js";
-import SubmissionResults from "../components/Submission.jsx";
-import { useExecutionStore } from "../store/useExecutionStore.js";
 import SubmissionList from "../components/SubmissionList.jsx";
-
-import { useSubmissionStore } from "../store/useSubmissionStore.js";
+import SubmissionResults from "../components/SubmissionResult.jsx";
+import AddToPlaylist from "../components/AddToPlaylist.jsx";
 
 const ProblemPage = () => {
   const { id } = useParams();
   const { getProblemById, problem, isProblemLoading } = useProblemStore();
 
-  //   console.log("problem", problem);
+  const {authUser} = useAuthStore()
+    console.log("problem page", authUser);
+  const [selectedProblemId, setSelectedProblemId] = useState(null);
+   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] =
+      useState(false);
+  
   const [code, setCode] = useState("");
   const [activeTab, setActiveTab] = useState("description");
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
@@ -43,6 +51,7 @@ const ProblemPage = () => {
   const { executeCode, submission, isExecuting } = useExecutionStore();
   const {
      submissions,
+     problemSubmissions,
     isLoading: isSubmissionsLoading,
     submissionCount,
     getSubmissionForProblem,
@@ -58,7 +67,7 @@ const ProblemPage = () => {
 
   useEffect(() => {
     if (problem) {
-      setCode(problem.codeSnippets?.[selectedLanguage] || "");
+      setCode(problem.codeSnippets?.[selectedLanguage] || problem.codeSnippets?.["javascript"]  );
       setTestcases(
         problem.testcases?.map((tc) => ({
           input: tc.input,
@@ -103,6 +112,11 @@ const ProblemPage = () => {
       </div>
     );
   }
+
+    const handleAddToPlaylist = (problemId) => {
+    setSelectedProblemId(problemId);
+    setIsAddToPlaylistModalOpen(true);
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -165,7 +179,9 @@ const ProblemPage = () => {
       case "submissions":
         return (
           <SubmissionList
-            submissions={submissions}
+            // submissions={submissions}
+            submissions={problemSubmissions?.[id] || []}
+
             isLoading={isSubmissionsLoading}
           />
         );
@@ -198,10 +214,10 @@ const ProblemPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-base-300 to-base-200 max-w-7xl w-full">
-      <nav className="navbar bg-base-100 shadow-lg px-4">
+    <div className="min-h-screen bg-gradient-to-br from-base-300 to-base-200 w-full max-w-7xl mx-auto  rounded-lg shadow-lg">
+      <nav className="navbar bg-base-100 shadow-md px-6 py-4 rounded-2xl">
         <div className="flex-1 gap-2 container items-center">
-          <Link to={"/"} className="flex items-center gap-1 text-primary">
+          <Link to={"/problem"} className="flex items-center gap-1 text-primary">
             {/* <Home className="w-6 h-6" /> */}
             < ArrowBigLeft className="w-4 h-4" />Back
           </Link>
@@ -228,16 +244,21 @@ const ProblemPage = () => {
         </div>
         <div className="flex-none gap-4">
           <button
-            className={`btn btn-ghost btn-circle ${
-              isBookmarked ? "text-primary" : ""
-            }`}
-            onClick={() => setIsBookmarked(!isBookmarked)}
-          >
-            <Bookmark className="w-5 h-5" />
+            className={`btn btn-ghost btn-circle `}
+            
+             onClick={() =>{ 
+              handleAddToPlaylist(problem.id) 
+              setIsBookmarked(!isBookmarked)}}
+              >
+           
+          
+            <Bookmark className= {`w-5 h-5 ${
+              isBookmarked ? "text-primary " : ""
+            }`} />
           </button>
-          <button className="btn btn-ghost btn-circle">
+          {/* <button className="btn btn-ghost btn-circle">
             <Share2 className="w-5 h-5" />
-          </button>
+          </button> */}
           <select
             className="select select-bordered select-primary w-40"
             value={selectedLanguage}
@@ -339,9 +360,9 @@ const ProblemPage = () => {
                     {!isExecuting && <Play className="w-4 h-4" />}
                     Run Code
                   </button>
-                  <button className="btn btn-success gap-2">
+                  {/* <button className="btn btn-success gap-2">
                     Submit Solution
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
@@ -380,6 +401,12 @@ const ProblemPage = () => {
           </div>
         </div>
       </div>
+
+        <AddToPlaylist
+        isOpen={isAddToPlaylistModalOpen}
+        onClose={() => setIsAddToPlaylistModalOpen(false)}
+        problemId={selectedProblemId}
+      />
     </div>
   );
 };
